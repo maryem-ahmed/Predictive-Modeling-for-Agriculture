@@ -1,0 +1,29 @@
+# All required libraries are imported here for you.
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import LabelEncoder
+# Load the dataset
+crops = pd.read_csv("soil_measures.csv")
+#soil features
+features = ['K','N','P','ph']
+#dict to see the accurecy of features 
+features_scores = {}
+LE = LabelEncoder()
+crops['crop'] = LE.fit_transform(crops['crop'])
+for feature in features :
+    X = crops[[feature]]
+    y = crops['crop']
+    X_train,X_test,y_train,y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    model = LogisticRegression(max_iter = 200)
+    model.fit(X_train,y_train)
+    y_pred = model.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+    features_scores[feature] = acc
+
+best_feature = max(features_scores, key=features_scores.get)
+best_score = features_scores[best_feature]
+best_predictive_feature = {best_feature: best_score}
+
+best_predictive_feature
